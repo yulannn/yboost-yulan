@@ -22,7 +22,7 @@ const Home = () => {
             className="max-w-4xl"
           >
             <div className="inline-block px-4 py-2 border border-light/20 mb-8">
-              <span className="space-font text-xs tracking-widest text-light/80">YBOOST BARR</span>
+              <span className="space-font text-xs tracking-widest text-light/80">YBOOST BAR</span>
             </div>
 
             <h1 className="text-6xl md:text-7xl lg:text-8xl integral-font mb-8 tracking-tighter leading-none">
