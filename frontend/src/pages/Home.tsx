@@ -31,7 +31,7 @@ const Home = () => {
 
             <p className="text-lg md:text-xl space-font text-light/70 max-w-2xl leading-relaxed mb-12">
               Découvrez une expérience unique où chaque cocktail raconte une histoire.
-              Mixologie moderne, ingrédients premium, service irréprochable.
+              Mixologie moderne ingrédients premium, service irréprochable.
             </p>
 
             <motion.button
