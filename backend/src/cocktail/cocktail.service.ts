@@ -12,7 +12,7 @@ export class CocktailService {
     const cocktails = await this.prisma.cocktail.findMany();
 
     if (cocktails.length === 0) {
-      throw new NotFoundException('No cocktails found');
+      throw new NotFoundException('No cocktails founds');
     }
 
     return cocktails;
@@ -63,15 +63,15 @@ export class CocktailService {
 
       // Supprime toutes les relations avec le cocktail
       await this.prisma.$transaction([
-      
+
         this.prisma.orderCocktail.deleteMany({
           where: { cocktail_id: id },
         }),
-      
+
         this.prisma.cocktailIngredient.deleteMany({
           where: { cocktail_id: id },
         }),
-      
+
         this.prisma.cocktail.delete({
           where: { cocktail_id: id },
         }),
