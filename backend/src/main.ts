@@ -8,10 +8,14 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.use(cookieParser());
 
+  // ✅ Correction du CORS pour autoriser Amplify
   app.enableCors({
-    origin: 'http://localhost:5173',
-    methods: 'GET,POST,PUT,DELETE,PATCH',
-    allowedHeaders: 'Content-Type, Accept',
+    origin: [
+      'https://main.d3odbswaxmuyah.amplifyapp.com', // Ton URL de production
+      'http://localhost:5173'                      // Ton environnement local
+    ],
+    methods: 'GET,POST,PUT,DELETE,PATCH,HEAD',
+    allowedHeaders: 'Content-Type, Accept, Authorization',
     credentials: true,
   });
 
@@ -27,6 +31,7 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
 
-  await app.listen(process.env.PORT ?? 3000);
+  // ✅ Force l'écoute sur toutes les interfaces pour Docker
+  await app.listen(process.env.PORT ?? 3000, '0.0.0.0');
 }
 bootstrap();
