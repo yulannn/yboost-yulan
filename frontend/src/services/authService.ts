@@ -1,7 +1,6 @@
 import { useMutation } from '@tanstack/react-query';
 import { LoginData } from '../types/LoginData';
 import { RegisterData } from '../types/RegisterData';
-import { Employee } from '../types/EmployeeData';
 
 const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 

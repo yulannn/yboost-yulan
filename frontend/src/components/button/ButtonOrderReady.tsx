@@ -1,4 +1,3 @@
-import { useState, useEffect } from "react";
 import { useUpdateOrder } from "../../services/orderService";
 
 interface ButtonOrderReadyProps {
@@ -8,11 +7,6 @@ interface ButtonOrderReadyProps {
 
 const ButtonOrderReady = ({ order, state }: ButtonOrderReadyProps) => {
   const { mutate } = useUpdateOrder();
-  const [isChecked, setIsChecked] = useState(state === "ready");
-
-  useEffect(() => {
-    setIsChecked(state === "ready");
-  }, [state]);
 
   const handleSubmit = (): void => {
     let newState;
@@ -33,7 +27,6 @@ const ButtonOrderReady = ({ order, state }: ButtonOrderReadyProps) => {
       {
         onSuccess: () => {
           console.log(`Commande mise à jour vers ${newState} !`);
-          setIsChecked(newState === "ready");
         },
         onError: (error) => {
           console.error("Erreur lors de la mise à jour:", error);
