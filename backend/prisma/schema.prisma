@@ -1,0 +1,83 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Employee {
+  employee_id Int     @id @default(autoincrement())
+  name        String
+  lastname    String
+  email       String  @unique
+  password    String
+  country     String?
+  profile_pic String?
+  role_id     Int
+  role        Role    @relation(fields: [role_id], references: [role_id])
+  orders      Order[]
+}
+
+model Role {
+  role_id   Int        @id @default(autoincrement())
+  name      String
+  employees Employee[]
+}
+
+model Order {
+  order_id       Int             @id @default(autoincrement())
+  nb_table       Int
+  state          String
+  order_date     DateTime        @default(now())
+  employee_id    Int? // Facultatif, permet de ne pas assigner d'employé à la commande
+  employee       Employee?       @relation(fields: [employee_id], references: [employee_id])
+  orderCocktails OrderCocktail[] // Relation avec les cocktails de la commande
+  table          Table           @relation(fields: [nb_table], references: [table_no]) // Relation avec la table
+}
+
+model Cocktail {
+  cocktail_id         Int                  @id @default(autoincrement())
+  name                String
+  price               Float
+  image               String
+  description         String?
+  alcohol             Boolean
+  cocktailIngredients CocktailIngredient[]
+  orderCocktails      OrderCocktail[]
+}
+
+model Ingredient {
+  ingredient_id       Int                  @id @default(autoincrement())
+  name                String
+  image               String
+  alcohol             Boolean
+  stock               Int
+  cocktailIngredients CocktailIngredient[]
+}
+
+model CocktailIngredient {
+  cocktail_id   Int
+  ingredient_id Int
+  quantity      Int        @default(1)
+  cocktail      Cocktail   @relation(fields: [cocktail_id], references: [cocktail_id])
+  ingredient    Ingredient @relation(fields: [ingredient_id], references: [ingredient_id])
+
+  @@id([cocktail_id, ingredient_id])
+}
+
+model OrderCocktail {
+  cocktail_id Int
+  order_id    Int
+  quantity    Int
+  cocktail    Cocktail @relation(fields: [cocktail_id], references: [cocktail_id])
+  order       Order    @relation(fields: [order_id], references: [order_id])
+
+  @@id([cocktail_id, order_id])
+}
+
+model Table {
+  table_no Int     @id
+  orders   Order[]
+}

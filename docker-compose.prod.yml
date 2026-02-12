@@ -1,0 +1,24 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: yboost-backend-prod
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      # La DATABASE_URL est construite dynamiquement à partir des variables RDS
+      DATABASE_URL: postgresql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-7d}
+      PORT: 3000
+    ports:
+      - "80:3000"
+    # Pas de volumes locaux pour la prod RDS/EC2 (utilisation de stockage S3 ou EBS conseillée pour les persitances)
+    # Si vous avez besoin de persister les uploads sur EC2 sans S3, décommentez la ligne suivante :
+    # - ./uploads:/app/uploads
+    command: >
+      sh -c "
+        npx prisma migrate deploy &&
+        node dist/src/main
+      "

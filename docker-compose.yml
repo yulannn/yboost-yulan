@@ -1,0 +1,71 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: yboost-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: yboost_user
+      POSTGRES_PASSWORD: yboost_password
+      POSTGRES_DB: yboost_db
+    ports:
+      - "5434:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - yboost-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U yboost_user -d yboost_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: yboost-backend
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgresql://yboost_user:yboost_password@postgres:5432/yboost_db
+      JWT_SECRET: ${JWT_SECRET:-your-super-secret-jwt-key-change-this-in-production}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-7d}
+      PORT: 3000
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./backend/uploads:/app/uploads
+    networks:
+      - yboost-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: >
+      sh -c "
+        npx prisma migrate deploy &&
+        npx tsx prisma/seed.ts &&
+        node dist/src/main
+      "
+
+  # Optionnel: pgAdmin pour gérer la base de données via une interface web
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: yboost-pgadmin
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@yboost.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5051:80"
+    networks:
+      - yboost-network
+    depends_on:
+      - postgres
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  yboost-network:
+    driver: bridge
