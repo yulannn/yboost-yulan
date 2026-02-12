@@ -12,7 +12,7 @@ export class CocktailService {
     const cocktails = await this.prisma.cocktail.findMany();
 
     if (cocktails.length === 0) {
-      throw new NotFoundException('No cocktails founnds');
+      throw new NotFoundException('No cocktails founndds');
     }
 
     return cocktails;
